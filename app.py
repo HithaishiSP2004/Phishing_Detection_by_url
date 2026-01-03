@@ -47,7 +47,10 @@ trusted_exact_domains = {
     "instagram.com", "www.instagram.com",
     "linkedin.com", "www.linkedin.com",
     "microsoft.com", "www.microsoft.com",
-    "wikipedia.org", "www.wikipedia.org"
+    "geeksforgeeks.org", "www.geeksforgeeks.org",
+    "coursera.org", "www.coursera.org",
+    "udemy.com", "www.udemy.com",
+    "wikipedia.org", "www.wikipedia.org",
     "hithaishi-sp-portfolio.netlify.app"
 }
 
