@@ -1,15 +1,15 @@
-# 🔐 Phishing Website Detection
+# Phishing Website Detection
 
 A simple machine learning–based system that detects whether a URL is **Phishing** or **Legitimate** using **URL structure analysis**.
 
-## 📌 About the Project
+# About the Project
 
 This project analyzes the **lexical features of a URL** (length, characters, randomness, HTTPS usage, etc.) to identify phishing websites.
 It does not rely on website content or third-party APIs, making it fast and lightweight.
 
 The system is deployed as a **Streamlit web application** for real-time URL checking.
 
-## ⚙️ How It Works
+# How It Works
 
 1. User enters a URL
 2. URL features are extracted
@@ -18,13 +18,13 @@ The system is deployed as a **Streamlit web application** for real-time URL chec
 
 Trusted domains (educational, government, and well-known platforms) are handled separately to reduce false positives.
 
-## 🧠 Model Used
+# Model Used
 
 * **Random Forest Classifier**
 * Accuracy: **~99.5%** (offline evaluation)
 * Trained using URL-based lexical features
 
-## 🛠️ Tech Stack
+# Tech Stack
 
 * Python
 * Pandas
