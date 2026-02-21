@@ -14,28 +14,56 @@ st.set_page_config(
 model = joblib.load("model/phishing_model.pkl")
 feature_names = joblib.load("model/feature_names.pkl")
 
-# ---------------- UI Header ----------------
-st.title("Phishing Website Detection")
-st.write("URL-based phishing detection using machine learning and lexical analysis.")
+# ---------------- Custom Styling ----------------
+st.markdown("""
+<style>
+.main-title {
+    font-size: 34px;
+    font-weight: 700;
+}
+.sub-text {
+    font-size: 16px;
+    color: #cccccc;
+}
+.section-heading {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 25px;
+}
+.footer {
+    margin-top: 60px;
+    padding-top: 15px;
+    border-top: 1px solid #444;
+    font-size: 14px;
+    text-align: center;
+    color: #aaaaaa;
+}
+</style>
+""", unsafe_allow_html=True)
 
-# Collapsible disclaimer (clean UI)
+# ---------------- Header ----------------
+st.markdown('<div class="main-title">Phishing Website Detection</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-text">URL-based phishing detection using machine learning and lexical analysis.</div>', unsafe_allow_html=True)
+
+st.markdown("---")
+
+# ---------------- About Section ----------------
 with st.expander("About this detection system"):
     st.write(
-        "This system performs **lexical URL analysis only**. "
-        "It does not verify website reputation, ownership, or webpage content. "
-        "A limited trusted-domain allowlist is used to reduce false positives. "
-        "Some legitimate websites may still be flagged due to structural similarities."
+        "This system performs lexical URL analysis only. "
+        "It does not scan website content or check domain reputation. "
+        "A limited trusted-domain allowlist is used to reduce false positives."
     )
 
-# Static model info
-st.markdown("**Model Accuracy:** ~99.5% (Random Forest Classifier)")
+st.markdown("**Model Accuracy (Offline Evaluation):** ~99.5%")
 
+st.markdown("---")
+
+# ---------------- Input ----------------
 url = st.text_input("Enter URL", placeholder="https://example.com")
 
 # ---------------- Trusted Domains ----------------
-trusted_suffix_domains = (
-    ".edu", ".edu.in", ".gov", ".gov.in"
-)
+trusted_suffix_domains = (".edu", ".edu.in", ".gov", ".gov.in")
 
 trusted_exact_domains = {
     "google.com", "www.google.com",
@@ -56,7 +84,7 @@ trusted_exact_domains = {
 
 # ---------------- Helper Functions ----------------
 def get_risk_label(prediction, strength):
-    if prediction == 1:  # Phishing
+    if prediction == 1:
         if strength >= 0.85:
             return "High Risk"
         elif strength >= 0.6:
@@ -90,16 +118,14 @@ def explain_flags(features, prediction):
             reasons.append("Multiple subdomains detected")
 
         if not reasons:
-            reasons.append(
-                "URL structure closely matches phishing patterns learned by the model"
-            )
+            reasons.append("URL structure matches learned phishing patterns")
     else:
         reasons.append("No strong phishing indicators detected")
 
     return reasons
 
 
-# ---------------- Main Logic ----------------
+# ---------------- Detection Logic ----------------
 if st.button("Check URL"):
     if url.strip() == "":
         st.warning("Please enter a URL.")
@@ -107,7 +133,7 @@ if st.button("Check URL"):
         parsed_url = urlparse(url)
         domain = parsed_url.netloc.lower()
 
-        # -------- Trusted Exact Domains --------
+        # Trusted exact domains
         if domain in trusted_exact_domains:
             st.success("Legitimate URL (Trusted Platform)")
             st.markdown("**Risk Level:** Low Risk")
@@ -115,46 +141,49 @@ if st.button("Check URL"):
             st.markdown("### Detection Strength")
             st.progress(0.95)
 
-            st.markdown("### Why this URL was flagged")
+            st.markdown("### Explanation")
             st.write("• Verified and widely trusted web platform")
 
-            st.stop()
-
-        # -------- Trusted Suffix Domains --------
-        if domain.endswith(trusted_suffix_domains):
+        # Trusted suffix domains
+        elif domain.endswith(trusted_suffix_domains):
             st.success("Legitimate URL (Trusted Domain)")
             st.markdown("**Risk Level:** Low Risk")
 
             st.markdown("### Detection Strength")
             st.progress(0.9)
 
-            st.markdown("### Why this URL was flagged")
+            st.markdown("### Explanation")
             st.write("• Trusted educational or government domain")
 
-            st.stop()
-
-        # -------- ML-Based Detection --------
-        features = extract_features(url)
-        df = pd.DataFrame([features])
-        df = df.reindex(columns=feature_names, fill_value=0)
-
-        pred = model.predict(df)[0]
-        prob = model.predict_proba(df)[0][pred]
-
-        strength = min(prob, 0.99)
-        risk = get_risk_label(pred, strength)
-
-        if pred == 1:
-            st.error(f"Phishing URL detected ({risk})")
         else:
-            st.success(f"Legitimate URL ({risk})")
+            features = extract_features(url)
+            df = pd.DataFrame([features])
+            df = df.reindex(columns=feature_names, fill_value=0)
 
-        st.markdown("### Detection Strength")
-        st.progress(strength)
+            pred = model.predict(df)[0]
+            prob = model.predict_proba(df)[0][pred]
+            strength = min(prob, 0.99)
+            risk = get_risk_label(pred, strength)
 
-        st.markdown("### Why this URL was flagged")
-        for r in explain_flags(features, pred):
-            st.write(f"- {r}")
+            if pred == 1:
+                st.error(f"Phishing URL detected ({risk})")
+            else:
+                st.success(f"Legitimate URL ({risk})")
 
-        st.markdown("### Extracted URL Features")
-        st.dataframe(df.T, use_container_width=True)
+            st.markdown("### Detection Strength")
+            st.progress(strength)
+
+            st.markdown("### Explanation")
+            for r in explain_flags(features, pred):
+                st.write(f"- {r}")
+
+            st.markdown("### Extracted URL Features")
+            st.dataframe(df.T, use_container_width=True)
+
+# ---------------- Footer ----------------
+st.markdown("""
+<div class="footer">
+Phishing Website Detection System | Built using Python & Scikit-learn<br>
+Developed by Hithaishi S P | Version 1.1
+</div>
+""", unsafe_allow_html=True)
