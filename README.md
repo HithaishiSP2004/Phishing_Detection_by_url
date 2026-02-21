@@ -5,6 +5,7 @@ A simple machine learning–based system that detects whether a URL is **Phishin
 # About the Project
 
 This project analyzes the **lexical features of a URL** (length, characters, randomness, HTTPS usage, etc.) to identify phishing websites.
+
 It does not rely on website content or third-party APIs, making it fast and lightweight.
 
 The system is deployed as a **Streamlit web application** for real-time URL checking.
@@ -41,6 +42,16 @@ streamlit run app.py
 
 This project performs **lexical URL analysis only** and does not check website reputation or content.
 It is intended as a **learning and demonstration project**.
+
+# Feature importance
+
+The system can be enhanced by:
+* Integrating domain reputation and WHOIS lookup.
+* Incorporating content-based analysis (HTML inspection).
+* Adding browser extension support.
+* Implementing deep learning models for advanced detection.
+* Continuous model retraining with updated datasets.
+
 
 # Author
 Hithaishi S P
